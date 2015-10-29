@@ -1,7 +1,6 @@
 package com.aug3.test.sparkme;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
@@ -16,10 +15,10 @@ public class EarningsCalculate {
 	private static final Logger LOGGER = Logger.getLogger(EarningsCalculate.class);
 
 	private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
-	private static final String MYSQL_USERNAME = "ada_user";
+	private static final String MYSQL_USER = "ada_user";
 	private static final String MYSQL_PWD = "ada_user";
-	private static final String MYSQL_CONNECTION_URL = "jdbc:mysql://192.168.250.208:3306/ada-fd?user="
-			+ MYSQL_USERNAME + "&password=" + MYSQL_PWD;
+	private static final String MYSQL_CONNECTION_URL = "jdbc:mysql://192.168.250.208:3306/ada-fd";
+	private static final String MYSQL_TABLE = "(select dt,tick,close from hq_price where dt > '2007') as quotes";
 
 	private static final JavaSparkContext sc = new JavaSparkContext(new SparkConf().setAppName("EarningsCalculate")
 			.setMaster("local[*]"));
@@ -32,20 +31,18 @@ public class EarningsCalculate {
 
 		Row[] dtRows = dateDF.select(new Column("dt")).collect();
 
-		Map<String, String> options = new HashMap<>();
-		options.put("driver", MYSQL_DRIVER);
-		options.put("url", MYSQL_CONNECTION_URL);
-		options.put("dbtable", "(select dt,tick,close from hq_price where dt > '2007') as quotes");
-		// options.put("partitionColumn", "id");
-		// options.put("lowerBound", "000001");
-		// options.put("upperBound", "999999");
-		// options.put("numPartitions", "10");
-		DataFrame df = sqlContext.read().format("jdbc").options(options).load();
+		Properties props = new Properties();
+		props.put("driver", MYSQL_DRIVER);
+		props.put("user", MYSQL_USER);
+		props.put("password", MYSQL_PWD);
+
+		sqlContext.read().jdbc(MYSQL_CONNECTION_URL, MYSQL_TABLE, props).registerTempTable("hq");
+		;
 
 		for (Row r : dtRows) {
 			String dt = r.getString(0);
-
-			Row[] secus = df.filter(new Column("dt").$eq$eq$eq(dt)).collect();
+			
+			Row[] secus = sqlContext.sql("select dt,tick,close from hq where dt='" + dt + "'").collect();
 			for (Row secu : secus) {
 				LOGGER.info(secu);
 				break;
