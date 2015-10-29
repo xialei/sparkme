@@ -2,7 +2,6 @@ package com.aug3.test.sparkme;
 
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Column;
@@ -14,7 +13,8 @@ import scala.Tuple2;
 
 public class EarningsCalculate {
 
-	private static final Logger LOGGER = Logger.getLogger(EarningsCalculate.class);
+	// private static final Logger LOGGER =
+	// Logger.getLogger(EarningsCalculate.class);
 
 	private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
 	private static final String MYSQL_USER = "ada_user";
@@ -39,15 +39,17 @@ public class EarningsCalculate {
 		props.put("password", MYSQL_PWD);
 
 		sqlContext.read().jdbc(MYSQL_CONNECTION_URL, MYSQL_TABLE, props).registerTempTable("hq");
-		;
 
 		for (Row r : dtRows) {
 			String dt = r.getString(0);
 
-			sqlContext.sql("select dt,tick,close from hq where dt='" + dt + "'").toJavaRDD().map(row -> {
+			DataFrame df = sqlContext.sql("select dt,tick,close from hq where dt='" + dt + "'");
+
+			df.toJavaRDD().map(row -> {
 				return new Tuple2(row.get(1), row.get(2));
-			}).foreach(t -> System.out.println(t.toString()));
-			;
+			});// .foreach(t -> m.put(t._1(), t._2()));
+
+			df.write().parquet("price.parquet");
 
 			break;
 		}
