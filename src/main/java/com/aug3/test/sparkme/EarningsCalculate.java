@@ -10,6 +10,8 @@ import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 
+import scala.Tuple2;
+
 public class EarningsCalculate {
 
 	private static final Logger LOGGER = Logger.getLogger(EarningsCalculate.class);
@@ -41,12 +43,12 @@ public class EarningsCalculate {
 
 		for (Row r : dtRows) {
 			String dt = r.getString(0);
-			
-			Row[] secus = sqlContext.sql("select dt,tick,close from hq where dt='" + dt + "'").collect();
-			for (Row secu : secus) {
-				LOGGER.info(secu);
-				break;
-			}
+
+			sqlContext.sql("select dt,tick,close from hq where dt='" + dt + "'").toJavaRDD().map(row -> {
+				return new Tuple2(row.get(1), row.get(2));
+			}).foreach(t -> System.out.println(t.toString()));
+			;
+
 			break;
 		}
 
