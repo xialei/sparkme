@@ -1,4 +1,6 @@
-===Eclipse/python/spark envionment
+===
+Eclipse/python/spark envionment
+
 1. Configure PyDev with the Spark Python sources
 From the “Preferences” window :
 Go to PyDev > Interpreters > Python Interpreter
@@ -21,4 +23,12 @@ Click on the central button [Environment]
 Click on the button [New...] to add a new Environment variable.
 Add the environment variable SPARK_HOME and validate :
 e.g 1 : Name: SPARK_HOME, Value: D:\Progra~1\spark-1.5.0-bin-hadoop2.6
+
+===
+pip install numpy --upgrade
+
+yum install atlas atlas-devel lapack-devel blas-devel
+pip install scipy
+
+pip install sparklingpandas
 
