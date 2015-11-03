@@ -1,5 +1,4 @@
-===
-Eclipse/python/spark envionment
+# Config Eclipse/python/spark environment
 
 1. Configure PyDev with the Spark Python sources
 From the “Preferences” window :
@@ -24,7 +23,8 @@ Click on the button [New...] to add a new Environment variable.
 Add the environment variable SPARK_HOME and validate :
 e.g 1 : Name: SPARK_HOME, Value: D:\Progra~1\spark-1.5.0-bin-hadoop2.6
 
-===
+# Install sparklingpandas
+
 pip install numpy --upgrade
 
 yum install atlas atlas-devel lapack-devel blas-devel
@@ -32,3 +32,11 @@ pip install scipy
 
 pip install sparklingpandas
 
+Successfully installed numpy-1.9.2 scipy-0.16.0 sparklingpandas-0.0.6
+
+
+# Use spark-submit to run your application
+$ YOUR_SPARK_HOME/bin/spark-submit \
+  --master local[4] \
+  SimpleApp.py
+  
