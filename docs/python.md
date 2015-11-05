@@ -39,4 +39,9 @@ Successfully installed numpy-1.9.2 scipy-0.16.0 sparklingpandas-0.0.6
 $ YOUR_SPARK_HOME/bin/spark-submit \
   --master local[4] \
   SimpleApp.py
+
+# Pandas
+http://pandas.pydata.org/
+
+https://jupyter.org/
   
