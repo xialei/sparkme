@@ -43,5 +43,47 @@ $ YOUR_SPARK_HOME/bin/spark-submit \
 # Pandas
 http://pandas.pydata.org/
 
+# ipython run on spark
 https://jupyter.org/
+
+pip install ipython
+
+ipython profile create pyspark
+
+vi /root/.ipython/profile_pyspark/startup/00-pyspark-setup.py
+
+	import os
+	import sys
+ 
+	# Configure the environment
+	if 'SPARK_HOME' not in os.environ:
+	    os.environ['SPARK_HOME'] = '/usr/local/spark'
+	 
+	# Create a variable for our root path
+	SPARK_HOME = os.environ['SPARK_HOME']
+	 
+	# Add the PySpark/py4j to the Python Path
+	sys.path.insert(0, os.path.join(SPARK_HOME, "python", "build"))
+	sys.path.insert(0, os.path.join(SPARK_HOME, "python")) 
+
+ipython --profile pyspark
+
+	In [1]: from pyspark import SparkContext
+	In [2]: sc = SparkContext('local', 'pyspark')
+	In [3]: def isprime(n):
+	   ...:     n= abs(int(n))
+	   ...:     if n<2:
+	   ...:         return False
+	   ...:     if n==2:
+	   ...:         return True
+	   ...:     if not n & 1:
+	   ...:         return False
+	   ...:     for x in range(3, int(n**0.5)+1, 2):
+	   ...:         if n % x ==0:
+	   ...:             return False
+	   ...:     return True
+	   ...: nums= sc.parallelize(xrange(1000000))
+	   ...: print nums.filter(isprime).count() 
+
+$ IPYTHON_OPTS=”notebook –pylab inline” pyspark
   
